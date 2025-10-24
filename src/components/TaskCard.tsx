@@ -1,4 +1,3 @@
-// src/components/TaskCard.tsx
 import React from "react";
 import type { Task } from "../types/Task";
 import { Draggable } from "@hello-pangea/dnd";
