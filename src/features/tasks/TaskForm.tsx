@@ -3,6 +3,7 @@ import type { Task, Priority } from "../../types/Task";
 import { useDispatch } from "react-redux";
 import { addTask, updateTask } from "./TaskSlice";
 import { v4 as uuidv4 } from "uuid";
+import { useTheme } from "../../contexts/ThemeContext";
 
 interface TaskFormProps {
   task?: Task; 
@@ -13,6 +14,7 @@ const priorities: Priority[] = ["Low", "Medium", "High"];
 
 const TaskForm: React.FC<TaskFormProps> = ({ task, onClose }) => {
   const dispatch = useDispatch();
+  const { theme } = useTheme();
 
   const [title, setTitle] = useState(task?.title || "");
   const [description, setDescription] = useState(task?.description || "");
@@ -43,14 +45,24 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onClose }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50 p-4">
-      <div className="bg-gray-800 p-6 rounded-xl shadow-2xl w-full max-w-md border border-gray-700">
+      <div className={`p-6 rounded-xl shadow-2xl w-full max-w-md ${
+        theme === 'light' 
+          ? 'bg-white border-gray-200' 
+          : 'bg-gray-800 border-gray-700'
+      } border`}>
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-200">
+          <h2 className={`text-2xl font-bold ${
+            theme === 'light' ? 'text-gray-800' : 'text-gray-200'
+          }`}>
             {task ? "Edit Task" : "Add New Task"}
           </h2>
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-300 transition-colors duration-200"
+            className={`p-2 transition-colors duration-200 ${
+              theme === 'light' 
+                ? 'text-gray-400 hover:text-gray-600' 
+                : 'text-gray-400 hover:text-gray-300'
+            }`}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -60,7 +72,9 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onClose }) => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className={`block text-sm font-medium mb-2 ${
+              theme === 'light' ? 'text-gray-700' : 'text-gray-300'
+            }`}>
               Task Title
             </label>
             <input
@@ -68,13 +82,19 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onClose }) => {
               placeholder="Enter task title..."
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                theme === 'light' 
+                  ? 'border-gray-300 bg-white text-gray-900 placeholder-gray-500' 
+                  : 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400'
+              }`}
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className={`block text-sm font-medium mb-2 ${
+              theme === 'light' ? 'text-gray-700' : 'text-gray-300'
+            }`}>
               Description
             </label>
             <textarea
@@ -82,20 +102,30 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onClose }) => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
-              className="w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
+              className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none ${
+                theme === 'light' 
+                  ? 'border-gray-300 bg-white text-gray-900 placeholder-gray-500' 
+                  : 'border-gray-600 bg-gray-700 text-gray-100 placeholder-gray-400'
+              }`}
               required
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className={`block text-sm font-medium mb-2 ${
+                theme === 'light' ? 'text-gray-700' : 'text-gray-300'
+              }`}>
                 Priority
               </label>
               <select
                 value={priority}
                 onChange={(e) => setPriority(e.target.value as Priority)}
-                className="w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                  theme === 'light' 
+                    ? 'border-gray-300 bg-white text-gray-900' 
+                    : 'border-gray-600 bg-gray-700 text-gray-100'
+                }`}
               >
                 {priorities.map((p) => (
                   <option key={p} value={p}>{p}</option>
@@ -104,14 +134,20 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onClose }) => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className={`block text-sm font-medium mb-2 ${
+                theme === 'light' ? 'text-gray-700' : 'text-gray-300'
+              }`}>
                 Due Date
               </label>
               <input
                 type="date"
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
-                className="w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                  theme === 'light' 
+                    ? 'border-gray-300 bg-white text-gray-900' 
+                    : 'border-gray-600 bg-gray-700 text-gray-100'
+                }`}
                 required
               />
             </div>
@@ -121,7 +157,11 @@ const TaskForm: React.FC<TaskFormProps> = ({ task, onClose }) => {
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-3 text-gray-300 bg-gray-700 hover:bg-gray-600 rounded-lg font-medium transition-all duration-200"
+              className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
+                theme === 'light' 
+                  ? 'text-gray-700 bg-gray-100 hover:bg-gray-200' 
+                  : 'text-gray-300 bg-gray-700 hover:bg-gray-600'
+              }`}
             >
               Cancel
             </button>

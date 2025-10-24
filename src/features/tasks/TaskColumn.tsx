@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import type { Task } from "../../types/Task";
 import TaskCard from "../../components/TaskCard";
 import { Droppable } from "@hello-pangea/dnd";
+import { useTheme } from "../../contexts/ThemeContext";
 
 interface TaskColumnProps {
   columnId: string;
@@ -13,6 +14,7 @@ type SortOption = "None" | "Due Date" | "Priority";
 
 const TaskColumn: React.FC<TaskColumnProps> = ({ columnId, title, tasks }) => {
   const [sortOption, setSortOption] = useState<SortOption>("None");
+  const { theme } = useTheme();
 
   const sortedTasks = [...tasks].sort((a, b) => {
     if (sortOption === "Due Date") {
@@ -26,15 +28,28 @@ const TaskColumn: React.FC<TaskColumnProps> = ({ columnId, title, tasks }) => {
   });
 
   const getColumnColor = (columnId: string) => {
-    switch (columnId) {
-      case 'Todo':
-        return 'border-blue-800 bg-blue-900/20';
-      case 'In Progress':
-        return 'border-yellow-800 bg-yellow-900/20';
-      case 'Done':
-        return 'border-green-800 bg-green-900/20';
-      default:
-        return 'border-gray-700 bg-gray-800/50';
+    if (theme === 'light') {
+      switch (columnId) {
+        case 'Todo':
+          return 'border-blue-200 bg-blue-50/50';
+        case 'In Progress':
+          return 'border-yellow-200 bg-yellow-50/50';
+        case 'Done':
+          return 'border-green-200 bg-green-50/50';
+        default:
+          return 'border-gray-200 bg-gray-50/50';
+      }
+    } else {
+      switch (columnId) {
+        case 'Todo':
+          return 'border-blue-800 bg-blue-900/20';
+        case 'In Progress':
+          return 'border-yellow-800 bg-yellow-900/20';
+        case 'Done':
+          return 'border-green-800 bg-green-900/20';
+        default:
+          return 'border-gray-700 bg-gray-800/50';
+      }
     }
   };
 
@@ -69,15 +84,25 @@ const TaskColumn: React.FC<TaskColumnProps> = ({ columnId, title, tasks }) => {
         <div className="flex justify-between items-center mb-3">
           <div className="flex items-center gap-2">
             {getColumnIcon(columnId)}
-            <h2 className="text-lg font-semibold text-gray-200">{title}</h2>
-            <span className="px-2 py-1 text-xs font-medium bg-gray-700/60 text-gray-300 rounded-full">
+            <h2 className={`text-lg font-semibold ${
+              theme === 'light' ? 'text-gray-800' : 'text-gray-200'
+            }`}>{title}</h2>
+            <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+              theme === 'light' 
+                ? 'bg-white/60 text-gray-600' 
+                : 'bg-gray-700/60 text-gray-300'
+            }`}>
               {sortedTasks.length}
             </span>
           </div>
           <select
             value={sortOption}
             onChange={(e) => setSortOption(e.target.value as SortOption)}
-            className="px-3 py-1 text-sm bg-gray-700 border border-gray-600 rounded-lg text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200"
+            className={`px-3 py-1 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200 ${
+              theme === 'light' 
+                ? 'bg-white border-gray-200 text-gray-700' 
+                : 'bg-gray-700 border-gray-600 text-gray-300'
+            } border`}
           >
             <option value="None">Sort</option>
             <option value="Due Date">Due Date</option>
@@ -86,7 +111,6 @@ const TaskColumn: React.FC<TaskColumnProps> = ({ columnId, title, tasks }) => {
         </div>
       </div>
 
-      {/* Column Content */}
       <Droppable droppableId={columnId}>
         {(provided, snapshot) => (
           <div
@@ -94,12 +118,16 @@ const TaskColumn: React.FC<TaskColumnProps> = ({ columnId, title, tasks }) => {
             {...provided.droppableProps}
             className={`flex-1 p-4 min-h-[500px] rounded-b-lg border-2 border-t-0 ${getColumnColor(columnId)} ${
               snapshot.isDraggingOver 
-                ? 'bg-blue-900/30 border-blue-700' 
+                ? theme === 'light'
+                  ? 'bg-blue-100/50 border-blue-300'
+                  : 'bg-blue-900/30 border-blue-700'
                 : ''
             } transition-all duration-200`}
           >
             {sortedTasks.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-32 text-gray-500">
+              <div className={`flex flex-col items-center justify-center h-32 ${
+                theme === 'light' ? 'text-gray-400' : 'text-gray-500'
+              }`}>
                 <svg className="w-8 h-8 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>

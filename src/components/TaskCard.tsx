@@ -3,6 +3,7 @@ import type { Task } from "../types/Task";
 import { Draggable } from "@hello-pangea/dnd";
 import { useDispatch } from "react-redux";
 import { deleteTask } from "../features/tasks/TaskSlice";
+import { useTheme } from "../contexts/ThemeContext";
 
 interface TaskCardProps {
   task: Task;
@@ -10,18 +11,32 @@ interface TaskCardProps {
 }
 
 const TaskCard: React.FC<TaskCardProps> = ({ task, index }) => {
-  const dispatch = useDispatch(); 
+  const dispatch = useDispatch();
+  const { theme } = useTheme(); 
 
   const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'High':
-        return 'bg-red-900/30 text-red-300 border-red-700';
-      case 'Medium':
-        return 'bg-yellow-900/30 text-yellow-300 border-yellow-700';
-      case 'Low':
-        return 'bg-green-900/30 text-green-300 border-green-700';
-      default:
-        return 'bg-gray-700 text-gray-300 border-gray-600';
+    if (theme === 'light') {
+      switch (priority) {
+        case 'High':
+          return 'bg-red-100 text-red-800 border-red-200';
+        case 'Medium':
+          return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+        case 'Low':
+          return 'bg-green-100 text-green-800 border-green-200';
+        default:
+          return 'bg-gray-100 text-gray-800 border-gray-200';
+      }
+    } else {
+      switch (priority) {
+        case 'High':
+          return 'bg-red-900/30 text-red-300 border-red-700';
+        case 'Medium':
+          return 'bg-yellow-900/30 text-yellow-300 border-yellow-700';
+        case 'Low':
+          return 'bg-green-900/30 text-green-300 border-green-700';
+        default:
+          return 'bg-gray-700 text-gray-300 border-gray-600';
+      }
     }
   };
 
@@ -35,14 +50,26 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, index }) => {
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          className={`bg-gray-700 p-4 rounded-lg shadow-md hover:shadow-lg border border-gray-600 cursor-grab active:cursor-grabbing transition-all duration-200 ${
+          className={`p-4 rounded-lg shadow-md hover:shadow-lg cursor-grab active:cursor-grabbing transition-all duration-200 ${
             snapshot.isDragging 
               ? 'rotate-2 scale-105 shadow-2xl' 
               : 'hover:scale-105'
-          } ${isOverdue ? 'border-red-600 bg-red-900/20' : ''}`}
+          } ${
+            theme === 'light' 
+              ? 'bg-white border-gray-200' 
+              : 'bg-gray-700 border-gray-600'
+          } border ${
+            isOverdue 
+              ? theme === 'light' 
+                ? 'border-red-300 bg-red-50/50' 
+                : 'border-red-600 bg-red-900/20'
+              : ''
+          }`}
         >
           <div className="flex justify-between items-start mb-3">
-            <h3 className="font-semibold text-gray-200 text-lg leading-tight">
+            <h3 className={`font-semibold text-lg leading-tight ${
+              theme === 'light' ? 'text-gray-800' : 'text-gray-200'
+            }`}>
               {task.title}
             </h3>
             <button
@@ -50,7 +77,11 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, index }) => {
                 e.stopPropagation();
                 dispatch(deleteTask(task.id));
               }}
-              className="p-1 text-gray-400 hover:text-red-400 transition-colors duration-200 opacity-0 group-hover:opacity-100"
+              className={`p-1 transition-colors duration-200 opacity-0 group-hover:opacity-100 ${
+                theme === 'light' 
+                  ? 'text-gray-400 hover:text-red-500' 
+                  : 'text-gray-400 hover:text-red-400'
+              }`}
               title="Delete task"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -59,7 +90,9 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, index }) => {
             </button>
           </div>
 
-          <p className="text-sm text-gray-400 mb-4 line-clamp-3">
+          <p className={`text-sm mb-4 line-clamp-3 ${
+            theme === 'light' ? 'text-gray-600' : 'text-gray-400'
+          }`}>
             {task.description}
           </p>
 
@@ -71,22 +104,32 @@ const TaskCard: React.FC<TaskCardProps> = ({ task, index }) => {
                 {task.priority}
               </span>
               {isOverdue && (
-                <span className="px-2 py-1 bg-red-900/30 text-red-300 rounded-full text-xs font-medium border border-red-700">
+                <span className={`px-2 py-1 rounded-full text-xs font-medium border ${
+                  theme === 'light' 
+                    ? 'bg-red-100 text-red-800 border-red-200' 
+                    : 'bg-red-900/30 text-red-300 border-red-700'
+                }`}>
                   Overdue
                 </span>
               )}
               {isDueToday && !isOverdue && (
-                <span className="px-2 py-1 bg-blue-900/30 text-blue-300 rounded-full text-xs font-medium border border-blue-700">
+                <span className={`px-2 py-1 rounded-full text-xs font-medium border ${
+                  theme === 'light' 
+                    ? 'bg-blue-100 text-blue-800 border-blue-200' 
+                    : 'bg-blue-900/30 text-blue-300 border-blue-700'
+                }`}>
                   Due Today
                 </span>
               )}
             </div>
             
-            <div className="flex items-center gap-1 text-xs text-gray-400">
+            <div className={`flex items-center gap-1 text-xs ${
+              theme === 'light' ? 'text-gray-500' : 'text-gray-400'
+            }`}>
               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              <span className={isOverdue ? 'text-red-400 font-medium' : ''}>
+              <span className={isOverdue ? (theme === 'light' ? 'text-red-600 font-medium' : 'text-red-400 font-medium') : ''}>
                 {new Date(task.dueDate).toLocaleDateString()}
               </span>
             </div>
